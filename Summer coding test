@@ -1,0 +1,136 @@
+#1
+public class main {
+
+    public static void main(String[] args){
+        Solution sol = new Solution();
+
+        int n = 10011;
+
+        long result = sol.solution(n);
+        System.out.println(result);
+    }
+}
+
+class Solution {
+    public int solution(int p) {
+
+        int answer = 0;
+        int i = p+1;
+
+        while(true){
+            if(i >= 10000){
+                int a = (i - 10000) /1000;
+                int b = ((i - 10000) -(a*1000))/100;
+                int c = ((i - 10000) - (a*1000) - (b*100)) / 10;
+                int d = i % 10;
+                int e = i / 10000;
+
+                if((a != b) && (a != c) && (a != d) && (b != c) && (b != d) && (c != d) && (e!=a) && (e!=b) && (e!=c) && (e!=d)){
+                    answer = i;
+                    break;
+                }
+            }
+            else {
+                int a = i / 1000;
+                int b = (i - (a * 1000)) / 100;
+                int c = (i - (a * 1000) - (b * 100)) / 10;
+                int d = i % 10;
+
+                if ((a != b) && (a != c) && (a != d) && (b != c) && (b != d) && (c != d)) {
+                    answer = i;
+                    break;
+                }
+            }
+            i++;
+        }
+
+        return answer;
+    }
+}
+
+
+#2
+class Solution {
+    long solution(long n){
+        ArrayList<Long> ansList = new ArrayList<Long>();
+        ansList.add((long) 0);
+        ansList.add((long) 1);
+
+        long index = 1;
+        int count = 1;
+
+        for(int i = 2; i <= n; i++) {
+            if(i == count * 2) {
+                index *= 3;
+                count *= 2;
+                ansList.add(index);
+            } else {
+                ansList.add(ansList.get(count) + ansList.get((i - count)));
+            }
+        }
+
+        return ansList.get((int)n);
+    }
+}
+
+#3
+import java.util.*;
+class Solution {
+    static public int[] solution(int total_sp, int[][] skills) {
+        int[] answer = {};
+        ArrayList<Integer> list = new ArrayList<Integer>();
+        int point = 0;
+        int k = 0;
+        
+        int[] parents = new int [100002];
+        int[] value = new int [100002];
+        
+        for (int[] set : skills) {
+            int parent = set[0];
+            int self = set[1];
+            parents[self] = parent;
+        }
+
+        for (int[] set : skills) {
+            int parent = set[0];
+            int self = set[1];
+            
+            if (!check(self, parents)) {
+                value[parent]++;
+                value[self]++;
+                
+                while (parents[parent] != 0) {
+                    value[parents[parent]]++;
+                    parent = parents[parent];
+                }
+            }
+        }
+        
+        for (int i : value) {
+            if (i != 0)
+                point += i;
+        }
+        k = total_sp / point;
+        
+        for (int i : value) {
+            if (i != 0)
+                list.add(i*k);
+        }
+        answer = new int[list.size()];
+        for (int i=0; i<list.size(); i++)
+            answer[i] = list.get(i);
+        
+        return answer;
+    }
+    
+    static public boolean check(int self, int[] parents) {
+        boolean b = false;
+        for (int i : parents) {
+            if (i == self) {
+                b = true;
+                break;
+            }
+        }
+        return b;
+    }
+}
