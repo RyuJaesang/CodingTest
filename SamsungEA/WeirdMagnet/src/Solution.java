@@ -26,6 +26,8 @@
 //System.out.println(AB);		       				     // long 변수 1개 출력하는 예제
 /////////////////////////////////////////////////////////////////////////////////////////////
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Scanner;
 import java.io.FileInputStream;
 
@@ -56,7 +58,7 @@ class Solution
 		   여러 개의 테스트 케이스가 주어지므로, 각각을 처리합니다.
 		*/
 
-        for(int test_case = 1; test_case <= 1; test_case++)
+        for(int test_case = 1; test_case <= T; test_case++)
         {
 
             /////////////////////////////////////////////////////////////////////////////////////////////
@@ -99,32 +101,23 @@ class Solution
             int magnetDirection = sc.nextInt();
             magnetMove.add(new int[]{magnetIndex, magnetDirection});
         }
-
-//        for(int i =0; i<k; i++) {
-//            int magnetIndex = magnetMove.get(i)[0] - 1;
-//
-//            int[] deciseMoveDirection = new int[4];
-//            deciseMoveDirection[magnetIndex] = magnetMove.get(i)[1];
-//
-//            ArrayList<Integer> moveSet = moveSet(magnetIndex);
-//
-//            for(int j = 0; j<moveSet.size(); j++){
-//
-//            }
-//
-//
-//        }
-        System.out.println("hi");
-        int targetMagnet = magnetMove.get(0)[0] -1;
+        /////////////// preparing ///////////////////////
 
 
-        printList(magnetMove);
 
-        System.out.println("fuck");
+//        printList(magnetMove);
 
+
+        // 움직일 갯수
         for(int i = 0; i<k; i++){
-            ArrayList<int[]> moveSet = moveSet(magnetMove.get(0)[0], magnetMove.get(0)[1]);
-
+            ArrayList<int[]> moveSet = moveSet(magnetMove.get(i)[0], magnetMove.get(i)[1]);
+//            Collections.sort(moveSet, new Comparator<int[]>() {
+//                @Override
+//                public int compare(int[] ints, int[] t1) {
+//                    return ints[0] - t1[0];
+//                }
+//            });
+            // 실제 움직임
             for(int j = 0; j<moveSet.size(); j++){
                 if(moveSet.get(j)[1] == 1){
                     magnet.set(moveSet.get(j)[0], clockDirection(magnet.get(moveSet.get(j)[0])));
@@ -133,9 +126,9 @@ class Solution
                     magnet.set(moveSet.get(j)[0], unclockDirection(magnet.get(moveSet.get(j)[0])));
                 }
             }
-            
-            calculateResult();
+
         }
+        calculateResult();
 
         System.out.println("#" + test_case + " " + result);
 
@@ -143,7 +136,7 @@ class Solution
 
     public static int[] clockDirection(int[] magnet){
         int tempVal = magnet[7];
-        for(int i = 0; i<7; i++){
+        for(int i = 6; i>=0; i--){
             magnet[i+1] = magnet[i];
         }
         magnet[0] = tempVal;
@@ -187,8 +180,14 @@ class Solution
 
         for(int i = index; i >0; i--){
             if(magnet.get(i-1)[2] != magnet.get(i)[6]){
-                moveSet.add(new int[]{i-1, -moveSet.get(iterIndex)[1]});
-                iterIndex++;
+                if(i == index){
+                    moveSet.add(new int[]{i - 1, -direction});
+                    iterIndex++;
+                }
+                else{
+                    moveSet.add(new int[]{i - 1, -moveSet.get(iterIndex)[1]});
+                    iterIndex++;
+                }
             }
             else{
                 break;
