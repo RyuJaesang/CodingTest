@@ -25,6 +25,9 @@
 //System.out.println(var);		       				   // 문자열 1개 출력하는 예제
 //System.out.println(AB);		       				     // long 변수 1개 출력하는 예제
 /////////////////////////////////////////////////////////////////////////////////////////////
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Scanner;
 import java.io.FileInputStream;
 
@@ -63,7 +66,192 @@ class Solution
 				 이 부분에 여러분의 알고리즘 구현이 들어갑니다.
 			 */
             /////////////////////////////////////////////////////////////////////////////////////////////
-
+            solution(sc, test_case);
         }
     }
+
+    static ArrayList<int[]> cell;
+    static int n;
+    static int result = 0;
+
+
+    public static void solution(Scanner sc, int test_case){
+        cell = new ArrayList<>();
+        result = 0;
+
+        n = sc.nextInt();
+        int time = sc.nextInt();
+        int cellNum = sc.nextInt();
+
+        for(int i = 0; i < cellNum; i++){
+            int a = sc.nextInt();
+            int b = sc.nextInt();
+            int val = sc.nextInt();
+            int dir = sc.nextInt();
+            cell.add(new int[]{a, b, val, dir});
+        }
+
+        for(int i = 0; i<time; i++){
+            moveStep();
+            checkBoarder();
+            checkMerge();
+        }
+
+        getResult();
+
+        System.out.println("#" + test_case + " " + result);
+    }
+
+    public static void moveStep(){
+        for(int i =0 ;i<cell.size(); i++){
+            if(cell.get(i)[3] == 1){
+                cell.get(i)[0] -= 1;
+            }
+            else if(cell.get(i)[3] == 2){
+                cell.get(i)[0] += 1;
+            }
+            else if(cell.get(i)[3] == 3){
+                cell.get(i)[1] -= 1;
+            }
+            else if(cell.get(i)[3] == 4){
+                cell.get(i)[1] += 1;
+            }
+        }
+    }
+
+    public static void checkBoarder(){
+        for(int i = 0; i<cell.size(); i++){
+            if(cell.get(i)[0] == 0){
+                cell.get(i)[2] = cell.get(i)[2] /2;
+                cell.get(i)[3] = 2;
+            }
+            else if(cell.get(i)[1] == 0){
+                cell.get(i)[2] = cell.get(i)[2] /2;
+                cell.get(i)[3] = 4;
+
+            }
+            else if(cell.get(i)[0] == n-1){
+                cell.get(i)[2] = cell.get(i)[2] /2;
+                cell.get(i)[3] = 1;
+            }
+            else if(cell.get(i)[1] == n-1){
+                cell.get(i)[2] = cell.get(i)[2] /2;
+                cell.get(i)[3] = 3;
+            }
+        }
+    }
+
+    public static void getResult(){
+        for(int i = 0; i < cell.size(); i++){
+            result += cell.get(i)[2];
+        }
+    }
+
+    public static void checkMerge(){
+
+        // Sorting
+        Collections.sort(cell, new Comparator<int[]>() {
+            @Override
+            public int compare(int[] ints, int[] t1) {
+                if(ints[0] == t1[0]){
+                    return ints[1] - t1[1];
+                }
+                else{
+                    return ints[0] - t1[0];
+                }
+            }
+        });
+
+        // Now check
+        for(int i = 0; i<cell.size()-1; i++){
+            if(cell.get(i)[0] == cell.get(i+1)[0] && cell.get(i)[1] == cell.get(i+1)[1]){
+
+                if(i+2 < cell.size()) {
+                    if (cell.get(i + 2)[0] == cell.get(i + 1)[0] && cell.get(i + 2)[1] == cell.get(i + 1)[1]) {
+                        // 4
+                        if (i + 3 < cell.size()) {
+                            if (cell.get(i + 2)[0] == cell.get(i + 3)[0] && cell.get(i + 2)[1] == cell.get(i + 3)[1]) {
+                                int dir = 0;
+                                int maxVal = 0;
+                                int addVal = 0;
+                                for (int j = i; j < i + 4; j++) {
+                                    addVal += cell.get(j)[2];
+                                    if (cell.get(j)[2] > maxVal) {
+                                        maxVal = cell.get(j)[2];
+                                        dir = cell.get(j)[3];
+                                    }
+                                }
+                                cell.add(new int[]{cell.get(i)[0], cell.get(i)[1], addVal, dir});
+                                for (int j = i + 3; j >= i; j--) {
+                                    cell.remove(j);
+                                }
+                                i--;
+                                continue;
+                            }
+                        }
+                        // 3
+                        int dir = 0;
+                        int maxVal = 0;
+                        int addVal = 0;
+                        for(int j = i; j < i+3; j++){
+                            addVal += cell.get(j)[2];
+                            if(cell.get(j)[2] > maxVal){
+                                maxVal = cell.get(j)[2];
+                                dir = cell.get(j)[3];
+                            }
+                        }
+                        cell.add(new int[]{cell.get(i)[0], cell.get(i)[1], addVal, dir});
+                        for(int j = i+2; j >= i; j--){
+                            cell.remove(j);
+                        }
+                        i--;
+                        continue;
+                    }
+                }
+                // 2
+                int dir = 0;
+                int maxVal = 0;
+                int addVal = 0;
+                for(int j = i; j < i+2; j++){
+                    addVal += cell.get(j)[2];
+                    if(cell.get(j)[2] > maxVal){
+                        maxVal = cell.get(j)[2];
+                        dir = cell.get(j)[3];
+                    }
+                }
+                cell.add(new int[]{cell.get(i)[0], cell.get(i)[1], addVal, dir});
+
+                for(int j = i+1; j >= i; j--){
+                    cell.remove(j);
+                }
+                i--;
+            }
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+    public static void printCell(ArrayList<int[]> input){
+        for(int i = 0; i< input.size(); i++){
+            for(int j = 0; j<input.get(i).length; j++){
+                System.out.print(input.get(i)[j] + " ");
+            }
+            System.out.println();
+        }
+    }
+
+
+
+
+
+
 }
